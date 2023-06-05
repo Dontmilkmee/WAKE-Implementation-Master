@@ -19,7 +19,7 @@ use crate::{
 use csv::WriterBuilder;
 use std::{error::Error, fs::File, time::Instant};
 use rand::{rngs::OsRng, Rng};
-use ark_bls12_377::{Fr, Parameters};
+use ark_bls12_377::{Fr, Parameters}; 
 use ark_ec::{PairingEngine, bls12::Bls12};
 use bulletproofs::PedersenGens;
 use curve25519_dalek_ng::{scalar::Scalar, ristretto::CompressedRistretto};

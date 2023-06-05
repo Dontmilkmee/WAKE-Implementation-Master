@@ -3,6 +3,8 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import csv
+import re
+import pandas as pd
 
 bounds = ["$2^{8}-1$","$2^{16}-1$","$2^{32}-1$","$2^{64}-1$"]
 time_comp_sign = []
@@ -109,3 +111,151 @@ plt.xlabel('Signature creation time in milliseconds (ms)')
 plt.ylabel('Signature verification time in milliseconds (ms)')
 plt.savefig(f'plots/sign_vs_verification_times/sign_vs_verification_plot_gm17.png', dpi=300)
 plt.clf()
+
+
+
+################################Plotting all data points################################
+data_points_grouped_by_upperbound = [[],[],[],[]]
+with open('data/all_sign_and_verify_data.txt','r') as file:
+      lines = file.readlines()
+      index = 0
+      for line in lines:
+                stripped_line = re.sub('\n', '', line).strip()
+                if line[0] == 'U':
+                        if stripped_line.split(":")[1] != "255":
+                                index += 1
+                else:
+                        data_points_grouped_by_upperbound[index].append(stripped_line.split(","))
+
+data_points_grouped_by_upperbound = [[[float(x)/1e6 for x in inner_list] for inner_list in lst] for lst in data_points_grouped_by_upperbound]
+
+colors = ['r', 'b', 'g', 'y']
+shapes = ['o', 'x']   
+
+#n=8
+data_points_grouped_by_type_255 = list(list(zip(*data_points_grouped_by_upperbound[0])))
+time_255_sig = []
+time_255_ver = []
+for i in range(4):
+        time_255_sig.append(list(data_points_grouped_by_type_255[i*2]))
+        time_255_ver.append(list(data_points_grouped_by_type_255[i*2+1]))
+
+df = pd.DataFrame(time_255_sig[0:2], index=["COMP BPRP", "OPT BPRP"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature creation time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_sig[3:5], index=["COMP GM17", "OPT GM17"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature creation time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_ver[0:2], index=["COMP BPRP", "OPT BPRP"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature verification time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_ver[3:5], index=["COMP GM17", "OPT GM17"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature verification time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+#n=16
+data_points_grouped_by_type_255 = list(list(zip(*data_points_grouped_by_upperbound[1])))
+time_255_sig = []
+time_255_ver = []
+for i in range(4):
+        time_255_sig.append(list(data_points_grouped_by_type_255[i*2]))
+        time_255_ver.append(list(data_points_grouped_by_type_255[i*2+1]))
+
+df = pd.DataFrame(time_255_sig[0:2], index=["COMP BPRP", "OPT BPRP"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature creation time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_sig[3:5], index=["COMP GM17", "OPT GM17"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature creation time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_ver[0:2], index=["COMP BPRP", "OPT BPRP"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature verification time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_ver[3:5], index=["COMP GM17", "OPT GM17"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature verification time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+#n=32
+data_points_grouped_by_type_255 = list(list(zip(*data_points_grouped_by_upperbound[2])))
+time_255_sig = []
+time_255_ver = []
+for i in range(4):
+        time_255_sig.append(list(data_points_grouped_by_type_255[i*2]))
+        time_255_ver.append(list(data_points_grouped_by_type_255[i*2+1]))
+
+df = pd.DataFrame(time_255_sig[0:2], index=["COMP BPRP", "OPT BPRP"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature creation time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_sig[3:5], index=["COMP GM17", "OPT GM17"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature creation time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_ver[0:2], index=["COMP BPRP", "OPT BPRP"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature verification time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_ver[3:5], index=["COMP GM17", "OPT GM17"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature verification time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+#n=64
+data_points_grouped_by_type_255 = list(list(zip(*data_points_grouped_by_upperbound[3])))
+time_255_sig = []
+time_255_ver = []
+for i in range(4):
+        time_255_sig.append(list(data_points_grouped_by_type_255[i*2]))
+        time_255_ver.append(list(data_points_grouped_by_type_255[i*2+1]))
+
+df = pd.DataFrame(time_255_sig[0:2], index=["COMP BPRP", "OPT BPRP"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature creation time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_sig[3:5], index=["COMP GM17", "OPT GM17"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature creation time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_ver[0:2], index=["COMP BPRP", "OPT BPRP"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature verification time")
+plt.subplots_adjust(left=0.25)
+plt.show()
+
+df = pd.DataFrame(time_255_ver[3:5], index=["COMP GM17", "OPT GM17"])
+df.T.boxplot(vert=False, sym='')
+plt.xlabel("Signature verification time")
+plt.subplots_adjust(left=0.25)
+plt.show()

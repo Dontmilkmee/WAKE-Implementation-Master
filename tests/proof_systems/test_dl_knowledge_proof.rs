@@ -7,7 +7,7 @@ mod tests {
     use lazy_static::lazy_static;
 
 
-    //setup of shared variables
+    //setup of shared variables 
     lazy_static!{
         static ref G: RistrettoPoint = PedersenGens::default().B;
         static ref H: RistrettoPoint = PedersenGens::default().B_blinding;

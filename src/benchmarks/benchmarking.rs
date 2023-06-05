@@ -69,8 +69,11 @@ Ok(())
 
 #[cfg(not(tarpaulin_include))]
 pub fn benchmark_protocol(sample_size: u128, party_amounts: &Vec<usize>) -> Result<(), Box<dyn Error>> {
+    use std::io::Write;
+
     println!("#############################Benchmark of protocols initiated############################");
     let mut data = Vec::new();
+    let mut all_exec_data_file = std::fs::File::create("src/benchmarks/data/all_protocol_executions_data.txt").expect("Failed to create file");
     let rng = &mut OsRng;
     
     //iterate over party amounts
@@ -80,6 +83,8 @@ pub fn benchmark_protocol(sample_size: u128, party_amounts: &Vec<usize>) -> Resu
         for (i, upperbound) in UPPERBOUNDS.iter().enumerate() {
             println!("upperbound: {}", upperbound);
             
+            all_exec_data_file.write(format!("Party-amount:{}, Upperbound:{}\n",party_amount, upperbound).as_bytes()).expect("Failed to write party-amount and upperbound to file");
+
             //gm17 setup values
             let (gm17_darkpool, pvk_list, pk_list) = setup_gm17(*party_amount, *upperbound)?;
             
@@ -129,6 +134,8 @@ pub fn benchmark_protocol(sample_size: u128, party_amounts: &Vec<usize>) -> Resu
                 total_time_elapsed_gm17_compiler += time_elapsed_gm17_compiler;
                 total_time_elapsed_gm17_optimized += time_elapzed_gm17_optimized;
                 total_time_elapsed_bd += time_elapsed_bd;
+
+                all_exec_data_file.write(format!("{},{},{},{},{}\n", time_elapsed_compiler, time_elapsed_optimized, time_elapsed_gm17_compiler, time_elapzed_gm17_optimized, time_elapsed_bd).as_bytes()).expect("Failed to write protocol data to file");
             }
             
             let upperbound_log = match i {
@@ -196,14 +203,19 @@ pub fn benchmark_protocol(sample_size: u128, party_amounts: &Vec<usize>) -> Resu
     
     #[cfg(not(tarpaulin_include))]
     pub fn benchmark_signature_and_session_authentication(sample_size: u128) -> Result<(), Box<dyn Error>> {
+        use std::io::Write;
+
         println!("###############Benchmark of signature and session authentication initiated###############");
         let mut data = Vec::new();
+        let mut all_exec_data_file = std::fs::File::create("src/benchmarks/data/all_sign_and_verify_data.txt").expect("Failed to create file");
         let rng = &mut OsRng;
         let g = PedersenGens::default().B;
         let h = PedersenGens::default().B_blinding;
         
         for (i, upperbound) in UPPERBOUNDS.iter().enumerate() {
             println!("upperbound: {}", upperbound);
+            all_exec_data_file.write(format!("Upperbound:{}\n", upperbound).as_bytes()).expect("Failed to write upperbound to file");
+
             let balance = rng.gen_range(MIN_BAL..=*upperbound);
             
             //blindings
@@ -241,54 +253,63 @@ pub fn benchmark_protocol(sample_size: u128, party_amounts: &Vec<usize>) -> Resu
             for i in 0..sample_size {
                 println!("iteration {}", i+1);
                 
-                
                 //time compiler proof
                 let start_time_compiler_sig = Instant::now();
                 let sig = CompSignature::sign(compiler_message.to_string(), MIN_BAL, balance, og_blinding, *upperbound);
-                total_time_elapsed_compiler_sig += start_time_compiler_sig.elapsed().as_nanos();
+                let time_elapsed_compiler_sig = start_time_compiler_sig.elapsed().as_nanos();
                 
                 //time compiler verifiaction
                 let start_time_compiler_verify = Instant::now();
                 let range_proof = RangeProofStruct::new(MIN_BAL, *upperbound);
                 let _ = sig.verify_signature(compiler_message.to_string(), &range_proof, &og_commitment);
-                total_time_elapsed_compiler_verify += start_time_compiler_verify.elapsed().as_nanos();
+                let time_elapsed_compiler_verify = start_time_compiler_verify.elapsed().as_nanos();
                 
                 //time optimized proof
                 let start_time_optimized_sig = Instant::now();
                 let optimized_sig = OptimizedSignatureAndSessionAuthentication::sign(&optimized_message.to_string(), MIN_BAL, balance, og_blinding, z_i.compress(), x_i, *upperbound, &og_commitment);
-                total_time_elapsed_optimized_sig += start_time_optimized_sig.elapsed().as_nanos();
+                let time_elapsed_optimized_sig = start_time_optimized_sig.elapsed().as_nanos();
                 
                 //time optimized verification
                 let start_time_optimized_verify = Instant::now();
                 let dl_proof = DiscreteLogKnowledgeProofStruct::new(z_i.compress());
                 let range_proof = RangeProofStruct::new(MIN_BAL, *upperbound);
                 let _ = optimized_sig.clone().verify_signature(&optimized_message.to_string(), &dl_proof, &range_proof, &og_commitment);
-                total_time_elapsed_optimized_verify += start_time_optimized_verify.elapsed().as_nanos();
+                let time_elapsed_optimized_verify = start_time_optimized_verify.elapsed().as_nanos();
                 
                 //time gm17 compiler proof
                 let start_time_gm17_comp_sig = Instant::now();
                 let gm17_comp_sig = GM17CompSignature::sign(&gm17_darkpool, compiler_message.to_string(), MIN_BAL, balance, og_blinding_fr, *upperbound, &pk);
-                total_time_elapsed_gm17_compiler_sig += start_time_gm17_comp_sig.elapsed().as_nanos();
+                let time_elapsed_gm17_comp_sig = start_time_gm17_comp_sig.elapsed().as_nanos();
                 
                 //time gm17 compiler verification
                 let v = Fr::from(upperbound - (balance - MIN_BAL));
                 let image = mimc(v, og_blinding_fr, &gm17_darkpool.mimc_constants);
                 let start_time_gm17_comp_ver = Instant::now();
                 let _ = gm17_comp_sig.verify_signature(&gm17_darkpool, &pvk, image, compiler_message.to_string());
-                total_time_elapsed_gm17_compiler_verify += start_time_gm17_comp_ver.elapsed().as_nanos();
+                let time_elapsed_gm17_comp_ver = start_time_gm17_comp_ver.elapsed().as_nanos();
                 
                 //time gm17 optimized proof
                 let image = mimc(v, og_blinding_fr, &gm17_darkpool.mimc_constants);
                 let start_time_gm17_opti_sig = Instant::now();
                 let gm17_opti_sig = GM17OptimizedSignatureAndSessionAuthentication::sign(&gm17_darkpool, image, &optimized_message.to_string(), MIN_BAL, balance, og_blinding_fr, z_i.compress(), x_i, *upperbound, &pk);
-                total_time_elapsed_gm17_optimized_sig += start_time_gm17_opti_sig.elapsed().as_nanos();
+                let time_elapsed_gm17_opti_sig = start_time_gm17_opti_sig.elapsed().as_nanos();
                 
                 //time gm17 optimized verification
                 let image = mimc(v, og_blinding_fr, &gm17_darkpool.mimc_constants);
                 let start_time_gm17_opti_ver = Instant::now();
                 let dl_proof = DiscreteLogKnowledgeProofStruct::new(z_i.compress());
                 let _ = gm17_opti_sig.verify_signature(&optimized_message.to_string(), &dl_proof, &pvk, &gm17_darkpool, image);
-                total_time_elapsed_gm17_optimized_verify += start_time_gm17_opti_ver.elapsed().as_nanos();
+                let time_elapsed_gm17_opti_ver = start_time_gm17_opti_ver.elapsed().as_nanos();
+                
+                total_time_elapsed_compiler_sig += time_elapsed_compiler_sig;
+                total_time_elapsed_compiler_verify += time_elapsed_compiler_verify;
+                total_time_elapsed_optimized_sig += time_elapsed_optimized_sig;
+                total_time_elapsed_optimized_verify += time_elapsed_optimized_verify;
+                total_time_elapsed_gm17_compiler_sig += time_elapsed_gm17_comp_sig;
+                total_time_elapsed_gm17_compiler_verify += time_elapsed_gm17_comp_ver;
+                total_time_elapsed_gm17_optimized_sig += time_elapsed_gm17_opti_sig;
+                total_time_elapsed_gm17_optimized_verify += time_elapsed_gm17_opti_ver;
+                all_exec_data_file.write(format!("{},{},{},{},{},{},{},{}\n", time_elapsed_compiler_sig, time_elapsed_compiler_verify, time_elapsed_optimized_sig, time_elapsed_optimized_verify, time_elapsed_gm17_comp_sig, time_elapsed_gm17_comp_ver, time_elapsed_gm17_opti_sig, time_elapsed_gm17_opti_ver).as_bytes()).expect("Failed to write signature creation and verification data to file");
             }
             
             let time_elapsed_comp_sig = total_time_elapsed_compiler_sig / sample_size;

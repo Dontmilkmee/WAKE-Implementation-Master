@@ -114,7 +114,7 @@ plt.clf()
 
 
 
-################################Plotting all data points################################
+################################Plotting boxplots for all data points################################
 data_points_grouped_by_upperbound = [[],[],[],[]]
 with open('data/all_sign_and_verify_data.txt','r') as file:
       lines = file.readlines()
@@ -132,6 +132,8 @@ data_points_grouped_by_upperbound = [[[float(x)/1e6 for x in inner_list] for inn
 colors = ['r', 'b', 'g', 'y']
 shapes = ['o', 'x']   
 
+outlier_marker = 'o'
+
 #n=8
 data_points_grouped_by_type_255 = list(list(zip(*data_points_grouped_by_upperbound[0])))
 time_255_sig = []
@@ -141,28 +143,31 @@ for i in range(4):
         time_255_ver.append(list(data_points_grouped_by_type_255[i*2+1]))
 
 df = pd.DataFrame(time_255_sig[0:2], index=["COMP BPRP", "OPT BPRP"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature creation time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/sign_and_session_auth_times/box_plot_n_8_bprp.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_sig[3:5], index=["COMP GM17", "OPT GM17"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature creation time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/sign_and_session_auth_times/box_plot_n_8_gm17.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_ver[0:2], index=["COMP BPRP", "OPT BPRP"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature verification time")
-plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/verification_times/box_plot_n_8_bprp.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_ver[3:5], index=["COMP GM17", "OPT GM17"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature verification time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/verification_times/box_plot_n_8_gm17.png', dpi=300)
+plt.clf()
 
 #n=16
 data_points_grouped_by_type_255 = list(list(zip(*data_points_grouped_by_upperbound[1])))
@@ -173,28 +178,32 @@ for i in range(4):
         time_255_ver.append(list(data_points_grouped_by_type_255[i*2+1]))
 
 df = pd.DataFrame(time_255_sig[0:2], index=["COMP BPRP", "OPT BPRP"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature creation time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/sign_and_session_auth_times/box_plot_n_16_bprp.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_sig[3:5], index=["COMP GM17", "OPT GM17"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature creation time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/sign_and_session_auth_times/box_plot_n_16_gm17.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_ver[0:2], index=["COMP BPRP", "OPT BPRP"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature verification time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/verification_times/box_plot_n_16_bprp.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_ver[3:5], index=["COMP GM17", "OPT GM17"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature verification time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/verification_times/box_plot_n_16_gm17.png', dpi=300)
+plt.clf()
 
 #n=32
 data_points_grouped_by_type_255 = list(list(zip(*data_points_grouped_by_upperbound[2])))
@@ -205,28 +214,32 @@ for i in range(4):
         time_255_ver.append(list(data_points_grouped_by_type_255[i*2+1]))
 
 df = pd.DataFrame(time_255_sig[0:2], index=["COMP BPRP", "OPT BPRP"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature creation time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/sign_and_session_auth_times/box_plot_n_32_bprp.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_sig[3:5], index=["COMP GM17", "OPT GM17"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature creation time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/sign_and_session_auth_times/box_plot_n_32_gm17.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_ver[0:2], index=["COMP BPRP", "OPT BPRP"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature verification time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/verification_times/box_plot_n_32_bprp.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_ver[3:5], index=["COMP GM17", "OPT GM17"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature verification time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/verification_times/box_plot_n_32_gm17.png', dpi=300)
+plt.clf()
 
 #n=64
 data_points_grouped_by_type_255 = list(list(zip(*data_points_grouped_by_upperbound[3])))
@@ -237,25 +250,29 @@ for i in range(4):
         time_255_ver.append(list(data_points_grouped_by_type_255[i*2+1]))
 
 df = pd.DataFrame(time_255_sig[0:2], index=["COMP BPRP", "OPT BPRP"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature creation time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/sign_and_session_auth_times/box_plot_n_64_bprp.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_sig[3:5], index=["COMP GM17", "OPT GM17"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature creation time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/sign_and_session_auth_times/box_plot_n_64_gm17.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_ver[0:2], index=["COMP BPRP", "OPT BPRP"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature verification time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/verification_times/box_plot_n_64_bprp.png', dpi=300)
+plt.clf()
 
 df = pd.DataFrame(time_255_ver[3:5], index=["COMP GM17", "OPT GM17"])
-df.T.boxplot(vert=False, sym='')
+df.T.boxplot(vert=False, sym=outlier_marker)
 plt.xlabel("Signature verification time")
 plt.subplots_adjust(left=0.25)
-plt.show()
+plt.savefig(f'plots/verification_times/box_plot_n_64_gm17.png', dpi=300)
+plt.clf()

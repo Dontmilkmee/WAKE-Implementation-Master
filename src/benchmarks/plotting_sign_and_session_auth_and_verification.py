@@ -111,3 +111,43 @@ plt.xlabel('Signature creation time in milliseconds (ms)')
 plt.ylabel('Signature verification time in milliseconds (ms)')
 plt.savefig(f'plots/sign_vs_verification_times/sign_vs_verification_plot_gm17.png', dpi=300)
 plt.clf()
+
+
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+import numpy as np
+upperbound_logarithms = np.array([8, 16, 32, 64]).reshape(-1,1)
+##########################################Test linear regression of signing time and verification time###########################################
+
+worst_norm_rmse = 0
+
+sign_lists = [np.array(time_comp_sign), np.array(time_opt_sign_and_session_auth), np.array(time_gm17_comp_sign), np.array(time_gm17_opt_sign_and_session_auth)]
+for y in sign_lists:
+        linear_regressor = LinearRegression()
+        linear_regressor.fit(upperbound_logarithms, y)
+        y_pred = linear_regressor.predict(upperbound_logarithms)
+
+        norm_rmse = mean_squared_error(y, y_pred, squared=False)/np.mean(y)
+        if norm_rmse > worst_norm_rmse:
+              worst_norm_rmse = norm_rmse
+
+verification_lists = [np.array(time_comp_ver), np.array(time_gm17_opt_ver)]
+for y in verification_lists:
+      linear_regressor = LinearRegression()
+      linear_regressor.fit(upperbound_logarithms, y)
+      y_pred = linear_regressor.predict(upperbound_logarithms)
+
+      norm_rmse = mean_squared_error(y, y_pred, squared=False)/np.mean(y)
+      if norm_rmse > worst_norm_rmse:
+              worst_norm_rmse = norm_rmse
+
+#print(worst_norm_rmse)
+
+
+##########################################Test constant GM17 verification###########################################
+verification_lists = [np.array(time_gm17_comp_ver), np.array(time_gm17_opt_ver)]
+for y in verification_lists:
+      linear_regressor = LinearRegression()
+      linear_regressor.fit(upperbound_logarithms, y)
+      #print(linear_regressor.coef_)
+      #print(linear_regressor.intercept_)
